@@ -284,11 +284,12 @@ body {
   align-items: center; 
   gap: 6px;
   font-family: 'JetBrains Mono', monospace; 
-  font-size: .6rem;
-  letter-spacing: .22em; 
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: .15em; 
   text-transform: uppercase;
-  padding: 7px 16px; 
-  border-radius: 99px;
+  padding: 6px 16px; 
+  border-radius: 9999px;
   border: 1px solid var(--tag-b); 
   color: var(--tag-c); 
   background: var(--tag);
@@ -1077,21 +1078,4 @@ footer {
   .fi2 { flex-direction: column; align-items: flex-start; }
   .hero-ctas { flex-direction: column; }
   .modal { padding: 28px 20px; }
-}
-
-/* Styling for the Get In Touch pill badge */
-.pill {
-  display: inline-block;
-  padding: 6px 16px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-radius: 9999px;
-  margin-bottom: 1rem;
-  
-  /* Fallback colors (adjust to match your design) */
-  background: rgba(255, 255, 255, 0.08); /* Semi-transparent light background */
-  color: #a78bfa;                       /* Light purple/indigo accent color */
-  border: 1px solid rgba(255, 255, 255, 0.15);
 }
