@@ -211,15 +211,15 @@
             <form onsubmit="submitContact(event)">
               <div class="fg">
                 <label class="fl">Name</label>
-                <input class="fi" type="text" placeholder="Your name" required />
+                <input name="name" class="fi" type="text" placeholder="Your name" required />
               </div>
               <div class="fg">
                 <label class="fl">Email</label>
-                <input class="fi" type="email" placeholder="you@example.com" required />
+                <input name="email" class="fi" type="email" placeholder="you@example.com" required />
               </div>
               <div class="fg">
                 <label class="fl">Message</label>
-                <textarea class="fta" placeholder="Tell me about your project..." required></textarea>
+                <textarea name="message" class="fta" placeholder="Tell me about your project..." required></textarea>
               </div>
               <button type="submit" class="bp" id="csend">Send Message</button>
             </form>
