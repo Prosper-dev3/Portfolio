@@ -1,59 +1,80 @@
-/* ── Data ────────────────────────────────────────────────────── */
-const DEF = [
-  { 
-    id: "1", 
-    year: "2024", 
-    title: "Verdant — Plant Care App",
-    desc: "Mobile-first app tracking watering schedules and identifying plant diseases via on-device computer vision. 800 users in week one.",
-    tags: ["React Native", "TensorFlow.js", "Node.js"],
-    img: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=500&fit=crop&auto=format", 
-    live: "", 
-    gh: "" 
-  },
-  { 
-    id: "2", 
-    year: "2024", 
-    title: "Meridian — Transit Dashboard",
-    desc: "Real-time transit aggregator pulling feeds from 5 agencies. 50k daily users at sub-200ms across peak load.",
-    tags: ["Next.js", "PostgreSQL", "Redis", "WebSockets"],
-    img: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&h=500&fit=crop&auto=format", 
-    live: "", 
-    gh: "" 
-  },
-  { 
-    id: "3", 
-    year: "2023", 
-    title: "Folio — Design System",
-    desc: "Open-source component library: 60+ accessible components, full dark mode, and a companion Figma kit. 1.2k GitHub stars.",
-    tags: ["TypeScript", "Radix UI", "Storybook"],
-    img: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=500&fit=crop&auto=format", 
-    live: "", 
-    gh: "" 
-  },
-  { 
-    id: "4", 
-    year: "2023", 
-    title: "Cartograph — Map Editor",
-    desc: "Browser-based GeoJSON editor with real-time collaborative editing and export to PDF/SVG. Used by planners at three city governments.",
-    tags: ["MapLibre GL", "CRDT", "Rust/WASM"],
-    img: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&h=500&fit=crop&auto=format", 
-    live: "", 
-    gh: "" 
+/* ── Database Initialization (GitHub CMS) ─────────────────── */
+const GITHUB_USER = "Prosper-dev3"; 
+const GITHUB_REPO = "Portfolio";      
+const FILE_PATH = "projects.json"; add
+
+let projects = [];
+
+// Safely decodes UTF-8 Base64 strings (supporting emojis/special characters)
+function decodeBase64(str) {
+  return new TextDecoder().decode(Uint8Array.from(atob(str.replace(/\s/g, '')), c => c.charCodeAt(0)));
+}
+
+// Safely encodes UTF-8 strings to Base64
+function encodeBase64(str) {
+  return btoa(String.fromCharCode(...new TextEncoder().encode(str)));
+}
+
+// Fetch projects directly from GitHub API (bypassing caches with cache-busting timestamp)
+async function loadProjects() {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${FILE_PATH}?t=${Date.now()}`);
+    if (!res.ok) throw new Error("Could not find projects.json in repository");
+    
+    const fileData = await res.json();
+    projects = JSON.parse(decodeBase64(fileData.content));
+  } catch (err) {
+    console.error("Error loading projects from GitHub:", err);
+    projects = [];
   }
-];
+  render();
+}
 
-let projects = (() => { 
-  try { 
-    const r = localStorage.getItem("pf_v3"); 
-    return r ? JSON.parse(r) : DEF; 
-  } catch { 
-    return DEF; 
-  } 
-})();
+// Handles updating projects.json on your GitHub repository
+async function saveToGitHub(newProjectsList) {
+  const token = prompt("Enter your GitHub Personal Access Token (PAT):");
+  if (!token) {
+    alert("Token required to make changes.");
+    return false;
+  }
 
-const save = () => {
-  localStorage.setItem("pf_v3", JSON.stringify(projects));
-};
+  try {
+    // 1. Get current file data to retrieve the mandatory 'sha' key
+    const getRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${FILE_PATH}?t=${Date.now()}`);
+    if (!getRes.ok) throw new Error("Could not retrieve file metadata from GitHub");
+    const fileData = await getRes.json();
+    const sha = fileData.sha;
+
+    // 2. Format and encode the new project list
+    const jsonString = JSON.stringify(newProjectsList, null, 2);
+    const base64Content = encodeBase64(jsonString);
+
+    // 3. Commit the change directly to your GitHub repo
+    const putRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${FILE_PATH}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `token ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: "portfolio: update projects list via UI dashboard",
+        content: base64Content,
+        sha: sha
+      })
+    });
+
+    if (!putRes.ok) {
+      const errData = await putRes.json();
+      throw new Error(errData.message || "Failed to push update to GitHub");
+    }
+
+    alert("Success! Your portfolio has updated globally.");
+    return true;
+  } catch (err) {
+    alert("Error: " + err.message);
+    return false;
+  }
+}
 
 const esc = (s) => {
   return String(s)
@@ -105,10 +126,17 @@ function render() {
   ).join("");
 }
 
-function del(id) { 
-  projects = projects.filter(p => p.id !== id); 
-  save(); 
-  render(); 
+/* ── Secure Delete Function ────────────────────────────────── */
+async function del(id) { 
+  if (!confirm("Are you sure you want to delete this project?")) return;
+
+  const updatedList = projects.filter(p => p.id !== id);
+  const success = await saveToGitHub(updatedList);
+  
+  if (success) {
+    projects = updatedList;
+    render();
+  }
 }
 
 /* ── Theme ───────────────────────────────────────────────────── */
@@ -254,14 +282,16 @@ function liveP() {
   }
 }
 
-function submitUpload(e) {
+/* ── Secure GitHub Upload Function ─────────────────────────── */
+async function submitUpload(e) {
   e.preventDefault();
+
   const tags = document.getElementById("u-tg").value
     .split(",")
     .map(t => t.trim())
     .filter(Boolean);
     
-  projects.unshift({
+  const newProject = {
     id: Date.now().toString(),
     title: document.getElementById("u-t").value.trim(),
     desc: document.getElementById("u-d").value.trim(),
@@ -270,12 +300,17 @@ function submitUpload(e) {
     live: document.getElementById("u-l").value.trim(),
     gh: document.getElementById("u-g").value.trim(),
     year: document.getElementById("u-y").value.trim() || String(new Date().getFullYear())
-  });
+  };
+
+  const updatedList = [newProject, ...projects];
+  const success = await saveToGitHub(updatedList);
   
-  save(); 
-  closeModal(); 
-  render();
-  document.getElementById("projects").scrollIntoView({ behavior: "smooth" });
+  if (success) {
+    projects = updatedList;
+    closeModal(); 
+    render();
+    document.getElementById("projects").scrollIntoView({ behavior: "smooth" });
+  }
 }
 
 /* ── Particles ───────────────────────────────────────────────── */
@@ -360,5 +395,5 @@ addEventListener("resize", () => {
 
 /* ── Boot ────────────────────────────────────────────────────── */
 document.getElementById("yr").textContent = new Date().getFullYear();
-render();
+loadProjects(); // 👈 Loads dynamically from projects.json on boot!
 initP();
