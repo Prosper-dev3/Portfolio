@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": "1784141465185",
+    "title": "IT Project",
+    "desc": "This is what I learnt during my IT",
+    "tags": [
+      "HTML",
+      "CSS",
+      "JS"
+    ],
+    "img": "https://placehold.co/800x500/0c0b18/8b5cf6?text=IT%20Project",
+    "live": "https://siwesproj.netlify.app",
+    "gh": "",
+    "year": "2026"
+  }
+]
