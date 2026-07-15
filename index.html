@@ -251,57 +251,57 @@
 
   </div><!-- /#app -->
 
-  <!-- ── ADD PROJECT MODAL ──────────────────────────────────────── -->
-  <div id="modal-overlay" onclick="overlayClick(event)">
-    <div class="modal glass">
-      <button class="modal-close" onclick="closeModal()" aria-label="Close">
-        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-      <div class="pill">Admin</div>
-      <h2>Add New Project</h2>
-      <p>Projects save to your browser instantly — no account needed.</p>
-      <form onsubmit="submitUpload(event)">
+<!-- ── ADD PROJECT MODAL ──────────────────────────────────────── -->
+<div id="modal-overlay" onclick="overlayClick(event)">
+  <div class="modal glass">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="pill">Admin</div>
+    <h2>Add New Project</h2>
+    <p>Projects save to your browser instantly — no account needed.</p>
+    <form onsubmit="submitUpload(event)">
+      <div class="fg">
+        <label class="fl">Project Title *</label>
+        <input class="fi" id="u-t" placeholder="e.g. Verdant — Plant Care App" required />
+      </div>
+      <div class="fg">
+        <label class="fl">Description *</label>
+        <textarea class="fta" id="u-d" placeholder="What does it do and why does it matter?" required style="height:90px"></textarea>
+      </div>
+      <div class="fg">
+        <label class="fl">Technologies (comma-separated) *</label>
+        <input class="fi" id="u-tg" placeholder="React, TypeScript, Node.js" required oninput="liveT()" />
+        <div class="lt" id="lt"></div>
+      </div>
+      <div class="frow">
         <div class="fg">
-          <label class="fl">Project Title *</label>
-          <input class="fi" id="u-t" placeholder="e.g. Verdant — Plant Care App" required />
+          <label class="fl">Year</label>
+          <input class="fi" id="u-y" placeholder="2024" />
         </div>
         <div class="fg">
-          <label class="fl">Description *</label>
-          <textarea class="fta" id="u-d" placeholder="What does it do and why does it matter?" required style="height:90px"></textarea>
+          <label class="fl">Cover Image URL</label>
+          <input class="fi" id="u-i" type="text" placeholder="https://..." oninput="liveP()" />
         </div>
         <div class="fg">
-          <label class="fl">Technologies (comma-separated) *</label>
-          <input class="fi" id="u-tg" placeholder="React, TypeScript, Node.js" required oninput="liveT()" />
-          <div class="lt" id="lt"></div>
+          <label class="fl">Live URL</label>
+          <input class="fi" id="u-l" type="text" placeholder="https://..." />
         </div>
-        <div class="frow">
-          <div class="fg">
-            <label class="fl">Year</label>
-            <input class="fi" id="u-y" placeholder="2024" />
-          </div>
-          <div class="fg">
-            <label class="fl">Cover Image URL</label>
-            <input class="fi" id="u-i" type="url" placeholder="https://..." oninput="liveP()" />
-          </div>
-          <div class="fg">
-            <label class="fl">Live URL</label>
-            <input class="fi" id="u-l" type="url" placeholder="https://..." />
-          </div>
-          <div class="fg">
-            <label class="fl">GitHub URL</label>
-            <input class="fi" id="u-g" type="url" placeholder="https://github.com/..." />
-          </div>
+        <div class="fg">
+          <label class="fl">GitHub URL</label>
+          <input class="fi" id="u-g" type="text" placeholder="https://github.com/..." />
         </div>
-        <div class="iprev" id="ip">
-          <img id="ipi" src="" alt="Preview" />
-        </div>
-        <div class="facts">
-          <button type="submit" class="bp" style="flex:1">Add to Portfolio</button>
-          <button type="button" class="bc" onclick="closeModal()">Cancel</button>
-        </div>
-      </form>
-    </div>
+      </div>
+      <div class="iprev" id="ip">
+        <img id="ipi" src="" alt="Preview" />
+      </div>
+      <div class="facts">
+        <button type="submit" class="bp" style="flex:1">Add to Portfolio</button>
+        <button type="button" class="bc" onclick="closeModal()">Cancel</button>
+      </div>
+    </form>
   </div>
+</div>
 
   <!-- External JS -->
   <script src="main.js"></script>
