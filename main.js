@@ -1,7 +1,7 @@
 /* ── Database Initialization (GitHub CMS) ─────────────────── */
 const GITHUB_USER = "Prosper-dev3"; 
 const GITHUB_REPO = "Portfolio";      
-const FILE_PATH = "projects.json"; add
+const FILE_PATH = "projects.json";
 
 let projects = [];
 
@@ -13,6 +13,16 @@ function decodeBase64(str) {
 // Safely encodes UTF-8 strings to Base64
 function encodeBase64(str) {
   return btoa(String.fromCharCode(...new TextEncoder().encode(str)));
+}
+
+// Automatically formats partial URLs by adding https:// if missing
+function formatURL(url) {
+  if (!url) return "";
+  url = url.trim();
+  if (!/^https?:\/\//i.test(url)) {
+    return `https://${url}`;
+  }
+  return url;
 }
 
 // Fetch projects directly from GitHub API (bypassing caches with cache-busting timestamp)
@@ -286,19 +296,25 @@ function liveP() {
 async function submitUpload(e) {
   e.preventDefault();
 
+  const title = document.getElementById("u-t").value.trim();
   const tags = document.getElementById("u-tg").value
     .split(",")
     .map(t => t.trim())
     .filter(Boolean);
-    
+  
+  // Dynamic color placeholder generation matching your portfolio theme if no image is supplied!
+  const customPlaceholder = `https://placehold.co/800x500/0c0b18/8b5cf6?text=${encodeURIComponent(title)}`;
+  const inputImg = document.getElementById("u-i").value.trim();
+  const finalImg = inputImg || customPlaceholder;
+
   const newProject = {
     id: Date.now().toString(),
-    title: document.getElementById("u-t").value.trim(),
+    title,
     desc: document.getElementById("u-d").value.trim(),
     tags,
-    img: document.getElementById("u-i").value.trim() || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=500&fit=crop&auto=format",
-    live: document.getElementById("u-l").value.trim(),
-    gh: document.getElementById("u-g").value.trim(),
+    img: finalImg,
+    live: formatURL(document.getElementById("u-l").value),
+    gh: formatURL(document.getElementById("u-g").value),
     year: document.getElementById("u-y").value.trim() || String(new Date().getFullYear())
   };
 
